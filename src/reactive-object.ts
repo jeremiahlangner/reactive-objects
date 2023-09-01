@@ -14,6 +14,8 @@ export class ReactiveObject<T> {
 
     const handler = {
       get(target: any, key: string, receiver: any): any {
+        if (target == self) return;
+
         if (key === self.registerEffect.name) {
           return function() {
             return self.registerEffect.apply(self, arguments as any);

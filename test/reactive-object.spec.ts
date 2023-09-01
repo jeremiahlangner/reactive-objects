@@ -65,3 +65,15 @@ test('set effect should should pass data', () => {
   expect(_old).toBe('baz');
 });
 
+test('no effect execution if causes infinite loop', () => {
+  let getRes: any;
+  const foo: any = new ReactiveObject({});
+  foo.registerEffect((key: string) => {
+    foo[key];
+    getRes = 'foo';
+  });
+  foo.bar;
+  expect(getRes).toBe(undefined);
+});
+
+

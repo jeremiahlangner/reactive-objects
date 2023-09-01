@@ -35,11 +35,14 @@ foo.registerEffect((key: string) => console.log(key), 'get');
 foo.bar;
 ```
 
-Don't create infinite loops.
+The library guards against infinite loops. The following effect will not execute.
 
 ```TypeScript
 const foo: any = new ReactiveObject({ bar: 'baz' });
-// will blow out the call stack...
+// would blow out the call stack... but will not execute.
 foo.registerEffect((key: string) => console.log(foo[key]), 'get');
+
+// nothing happens.
+foo.bar;
 ```
 
