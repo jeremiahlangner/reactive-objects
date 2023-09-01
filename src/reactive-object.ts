@@ -88,19 +88,18 @@ export class ReactiveObject<T> {
     return proxy;
   }
 
-  // syntactic convention to  discourage overwriting while coding?
   registerEffect(effect: (data: any)  => void, type?: 'get' | 'set' | null) {
     const effects = type === 'get' ? this.effects.getEffects : this.effects.setEffects;
     let hash: string;
     do {
       hash = Math.random().toString(16).substring(2,15);
-    } while (effects[hash]);
-    effects[hash] = effect;
+    } while (effects![hash]);
+    effects![hash] = effect;
     return hash;
   }
 
   removeEffect(hash: string, type?: 'get' | 'set' | null) {
     const effects = type === 'get' ? this.effects.getEffects : this.effects.setEffects;
-    delete effects[hash];
+    delete effects![hash];
   }
 }

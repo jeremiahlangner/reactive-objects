@@ -1,13 +1,16 @@
 export class ReactiveObject {
     effects;
-    constructor(obj) {
+    constructor(obj, options) {
         const self = this;
         this.effects = {
+            options,
             getEffects: {},
             setEffects: {}
         };
         const handler = {
             get(target, key, receiver) {
+                if (target == self)
+                    return;
                 if (key === self.registerEffect.name) {
                     return function () {
                         return self.registerEffect.apply(self, arguments);
@@ -48,7 +51,6 @@ export class ReactiveObject {
         const proxy = new Proxy(obj, handler);
         return proxy;
     }
-    // syntactic convention to  discourage overwriting while coding?
     registerEffect(effect, type) {
         const effects = type === 'get' ? this.effects.getEffects : this.effects.setEffects;
         let hash;
