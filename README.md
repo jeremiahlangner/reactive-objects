@@ -25,14 +25,13 @@ foo.removeEffect(hash);
 foo.bar = 'baz';
 ```
 
-Add a getter effect (for example a logger for property access).
+Add a getter effect (for example, a logger for property access).
 
 ```TypeScript
-const foo = new ReactiveObject({ bar: 'baz' });
-foo.registerEffect((data) => console.log(data), 'get');
+const foo: any = new ReactiveObject({ bar: 'baz' });
+foo.registerEffect((key: string) => console.log(key), 'get');
 
-// should log the key accessed
+// should log 'bar'
 foo.bar;
 ```
 
-The functions signatures are documented by their types.
