@@ -12,7 +12,6 @@ export class ReactiveObject {
     // by default does nothing when a property is accessed;
     // may be a good place to register a debugger/logger
     getter(key) {
-        return this.object[key];
     }
     // by default will not execute effects unless the value has changed
     setter(key, val, old) {

@@ -1,9 +1,9 @@
 export class Observed {
-    _setter; // side effect(s) to call when object modified (e.g. render())
-    _getter; // side effect(s) on object access
+    setter; // side effect(s) to call when object modified (e.g. render())
+    getter; // side effect(s) on object access
     constructor(obj, getter, setter) {
-        this._setter = setter;
-        this._getter = getter;
+        this.setter = setter;
+        this.getter = getter;
         const self = this;
         const handler = {
             get(target, key) {
@@ -15,7 +15,7 @@ export class Observed {
                     return target[key];
                 }
                 else {
-                    self._getter(key);
+                    self.getter(key);
                     return target[key];
                 }
             },
@@ -25,7 +25,7 @@ export class Observed {
                 const old = target[key];
                 target[key] = value;
                 if (key !== '_isProxy')
-                    self._setter(key, value, old);
+                    self.setter(key, value, old);
                 return true;
             }
         };
