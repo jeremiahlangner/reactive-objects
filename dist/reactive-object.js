@@ -14,7 +14,9 @@ export class ReactiveObject {
                     };
                 }
                 if (key === self.removeEffect.name) {
-                    return self.removeEffect;
+                    return function () {
+                        return self.removeEffect.apply(self, arguments);
+                    };
                 }
                 if (typeof target[key] === "object" && target[key] !== null) {
                     if (!target._isProxy) {
