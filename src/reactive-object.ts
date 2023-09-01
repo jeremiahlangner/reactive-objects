@@ -1,13 +1,42 @@
+interface EffectOptions {
+  full: boolean;
+  all: boolean;
+}
+
+interface GetEffectArguments {
+  key: string;
+  val: any;
+  data: any;
+}
+
+interface SetEffectArguments {
+  key: string;
+  val: any;
+  old: any;
+  data: any;
+}
+
+interface Effects {
+  options: Partial<EffectOptions>;
+  getEffects: { [hash: string ]: (args: GetEffectArguments) => void };
+  setEffects: { [hash: string ]: (args: SetEffectArguments) => void };
+}
+
 export class ReactiveObject<T> {
-  private effects: {
+  private effects: Partial<{
+    options: Partial<EffectOptions>,
     getEffects: { [hash: string]: (key: string) => void },
     setEffects: { [hash: string]: (key: string, val: any, old?: any) => void }
-  }
+  }>;
 
-  constructor(obj: T) {
+  constructor(
+    obj: T,
+    options?: Partial<EffectOptions>
+  ) {
     const self = this;
     
     this.effects = {
+      options,
       getEffects: {},
       setEffects: {}
     };
