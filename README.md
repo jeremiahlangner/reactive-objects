@@ -35,3 +35,11 @@ foo.registerEffect((key: string) => console.log(key), 'get');
 foo.bar;
 ```
 
+Don't create infinite loops.
+
+```TypeScript
+const foo: any = new ReactiveObject({ bar: 'baz' });
+// will blow out the call stack...
+foo.registerEffect((key: string) => console.log(foo[key]), 'get');
+```
+
