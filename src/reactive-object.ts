@@ -21,7 +21,9 @@ export class ReactiveObject<T> {
         }
 
         if (key === self.removeEffect.name) {
-          return self.removeEffect;
+          return function() {
+            return self.removeEffect.apply(self, arguments as any);
+          }
         }
 
         if (typeof target[key] === "object" && target[key] !== null) {
