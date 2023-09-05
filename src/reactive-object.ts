@@ -2,8 +2,8 @@ export class ReactiveObject<T> {
   private store: T;
   private effects: Partial<{
     options: Partial<EffectOptions>;
-    getEffects: { [hash: string]: (key: string) => void };
-    setEffects: { [hash: string]: (key: string, val: any, old?: any) => void };
+    getEffects: { [hash: string]: (args: Partial<GetEffectArguments>) => void };
+    setEffects: { [hash: string]: (args: Partial<SetEffectArguments>) => void };
   }>;
 
   constructor(obj: T, options?: Partial<EffectOptions>) {
@@ -11,7 +11,7 @@ export class ReactiveObject<T> {
     this.store = obj;
 
     this.effects = {
-      options,
+      options: options || {},
       getEffects: {},
       setEffects: {},
     };
@@ -40,14 +40,14 @@ export class ReactiveObject<T> {
           return target[key];
         } else {
           for (const h in self.effects.getEffects) {
-            self.effects.getEffects[h].apply(self, [key]);
+            self.effects.getEffects[h].apply(self, [{ key }]);
           }
           return target[key];
         }
       },
       set(target: any, key: string, value: any): boolean {
-        // prevent effect execution if same value; TODO: allow to be configurable
-        if (target[key] === value) return true;
+        // do nothing if not 'all' option
+        if (target[key] === value && !self.effects.options!.all) return true;
 
         if (key === Object.getPrototypeOf(self.effects).name) {
           return false;
@@ -61,7 +61,7 @@ export class ReactiveObject<T> {
           key !== self.removeEffect.name
         ) {
           for (const h in self.effects.setEffects) {
-            self.effects.setEffects[h].apply(self, [key, value, old]);
+            self.effects.setEffects[h].apply(self, [{key, value, old}]);
           }
         }
         return true;
@@ -93,20 +93,17 @@ export class ReactiveObject<T> {
 
 interface EffectOptions {
   full: boolean;
-  all: boolean;
+  all: boolean; // return all object data (non-proxied?)
 }
 
 interface GetEffectArguments {
   key: string;
-  val: any;
-  data: any;
 }
 
 interface SetEffectArguments {
   key: string;
-  val: any;
+  value: any;
   old: any;
-  data: any;
 }
 
 interface Effects {

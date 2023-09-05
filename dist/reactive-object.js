@@ -5,7 +5,7 @@ export class ReactiveObject {
         const self = this;
         this.store = obj;
         this.effects = {
-            options,
+            options: options || {},
             getEffects: {},
             setEffects: {},
         };
@@ -32,13 +32,13 @@ export class ReactiveObject {
                 }
                 else {
                     for (const h in self.effects.getEffects) {
-                        self.effects.getEffects[h].apply(self, [key]);
+                        self.effects.getEffects[h].apply(self, [{ key }]);
                     }
                     return target[key];
                 }
             },
             set(target, key, value) {
-                if (target[key] === value)
+                if (target[key] === value && !self.effects.options.all)
                     return true;
                 if (key === Object.getPrototypeOf(self.effects).name) {
                     return false;
@@ -49,7 +49,7 @@ export class ReactiveObject {
                     key !== self.registerEffect.name &&
                     key !== self.removeEffect.name) {
                     for (const h in self.effects.setEffects) {
-                        self.effects.setEffects[h].apply(self, [key, value, old]);
+                        self.effects.setEffects[h].apply(self, [{ key, value, old }]);
                     }
                 }
                 return true;
