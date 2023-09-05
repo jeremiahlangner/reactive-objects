@@ -1,10 +1,6 @@
 export class ReactiveObject<T> {
   private store: T;
-  private effects: Partial<{
-    options: Partial<EffectOptions>;
-    getEffects: { [hash: string]: (args: Partial<GetEffectArguments>) => void };
-    setEffects: { [hash: string]: (args: Partial<SetEffectArguments>) => void };
-  }>;
+  private effects: Effects;
 
   constructor(obj: T, options?: Partial<EffectOptions>) {
     const self = this;
@@ -61,7 +57,7 @@ export class ReactiveObject<T> {
           key !== self.removeEffect.name
         ) {
           for (const h in self.effects.setEffects) {
-            self.effects.setEffects[h].apply(self, [{key, value, old}]);
+            self.effects.setEffects[h].apply(self, [{ key, value, old }]);
           }
         }
         return true;
@@ -91,22 +87,22 @@ export class ReactiveObject<T> {
   }
 }
 
-interface EffectOptions {
+export interface EffectOptions {
   full: boolean;
   all: boolean; // return all object data (non-proxied?)
 }
 
-interface GetEffectArguments {
+export interface GetEffectArguments {
   key: string;
 }
 
-interface SetEffectArguments {
+export interface SetEffectArguments {
   key: string;
   value: any;
   old: any;
 }
 
-interface Effects {
+export interface Effects {
   options: Partial<EffectOptions>;
   getEffects: { [hash: string]: (args: GetEffectArguments) => void };
   setEffects: { [hash: string]: (args: SetEffectArguments) => void };
