@@ -1,22 +1,19 @@
 export class ReactiveObject<T> {
   private store: T;
   private effects: Partial<{
-    options: Partial<EffectOptions>,
-    getEffects: { [hash: string]: (key: string) => void },
-    setEffects: { [hash: string]: (key: string, val: any, old?: any) => void }
+    options: Partial<EffectOptions>;
+    getEffects: { [hash: string]: (key: string) => void };
+    setEffects: { [hash: string]: (key: string, val: any, old?: any) => void };
   }>;
 
-  constructor(
-    obj: T,
-    options?: Partial<EffectOptions>
-  ) {
+  constructor(obj: T, options?: Partial<EffectOptions>) {
     const self = this;
     this.store = obj;
-    
+
     this.effects = {
       options,
       getEffects: {},
-      setEffects: {}
+      setEffects: {},
     };
 
     const handler = {
@@ -24,15 +21,15 @@ export class ReactiveObject<T> {
         if (target == self) return;
 
         if (key === self.registerEffect.name) {
-          return function() {
+          return function () {
             return self.registerEffect.apply(self, arguments as any);
-          }
+          };
         }
 
         if (key === self.removeEffect.name) {
-          return function() {
+          return function () {
             return self.removeEffect.apply(self, arguments as any);
-          }
+          };
         }
 
         if (typeof target[key] === "object" && target[key] !== null) {
@@ -42,7 +39,7 @@ export class ReactiveObject<T> {
           }
           return target[key];
         } else {
-          for(const h in self.effects.getEffects) {
+          for (const h in self.effects.getEffects) {
             self.effects.getEffects[h].apply(self, [key]);
           }
           return target[key];
@@ -59,9 +56,9 @@ export class ReactiveObject<T> {
         const old = target[key];
         target[key] = value;
         if (
-          key !== "_isProxy" 
-          && key !== self.registerEffect.name 
-          && key !== self.removeEffect.name
+          key !== "_isProxy" &&
+          key !== self.registerEffect.name &&
+          key !== self.removeEffect.name
         ) {
           for (const h in self.effects.setEffects) {
             self.effects.setEffects[h].apply(self, [key, value, old]);
@@ -70,24 +67,26 @@ export class ReactiveObject<T> {
         return true;
       },
     };
-    
+
     const proxy = new Proxy(obj, handler);
 
     return proxy;
   }
 
-  registerEffect(effect: (data: any)  => void, type?: 'get' | 'set' | null) {
-    const effects = type === 'get' ? this.effects.getEffects : this.effects.setEffects;
+  registerEffect(effect: (data: any) => void, type?: "get" | "set" | null) {
+    const effects =
+      type === "get" ? this.effects.getEffects : this.effects.setEffects;
     let hash: string;
     do {
-      hash = Math.random().toString(16).substring(2,15);
+      hash = Math.random().toString(16).substring(2, 15);
     } while (effects![hash]);
     effects![hash] = effect;
     return hash;
   }
 
-  removeEffect(hash: string, type?: 'get' | 'set' | null) {
-    const effects = type === 'get' ? this.effects.getEffects : this.effects.setEffects;
+  removeEffect(hash: string, type?: "get" | "set" | null) {
+    const effects =
+      type === "get" ? this.effects.getEffects : this.effects.setEffects;
     delete effects![hash];
   }
 }
@@ -112,8 +111,6 @@ interface SetEffectArguments {
 
 interface Effects {
   options: Partial<EffectOptions>;
-  getEffects: { [hash: string ]: (args: GetEffectArguments) => void };
-  setEffects: { [hash: string ]: (args: SetEffectArguments) => void };
+  getEffects: { [hash: string]: (args: GetEffectArguments) => void };
+  setEffects: { [hash: string]: (args: SetEffectArguments) => void };
 }
-
-

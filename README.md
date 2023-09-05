@@ -45,4 +45,3 @@ foo.registerEffect((key: string) => console.log(foo[key]), 'get');
 // nothing happens.
 foo.bar;
 ```
-
