@@ -1,28 +1,5 @@
-interface EffectOptions {
-  full: boolean;
-  all: boolean;
-}
-
-interface GetEffectArguments {
-  key: string;
-  val: any;
-  data: any;
-}
-
-interface SetEffectArguments {
-  key: string;
-  val: any;
-  old: any;
-  data: any;
-}
-
-interface Effects {
-  options: Partial<EffectOptions>;
-  getEffects: { [hash: string ]: (args: GetEffectArguments) => void };
-  setEffects: { [hash: string ]: (args: SetEffectArguments) => void };
-}
-
 export class ReactiveObject<T> {
+  private store: T;
   private effects: Partial<{
     options: Partial<EffectOptions>,
     getEffects: { [hash: string]: (key: string) => void },
@@ -34,6 +11,7 @@ export class ReactiveObject<T> {
     options?: Partial<EffectOptions>
   ) {
     const self = this;
+    this.store = obj;
     
     this.effects = {
       options,
@@ -71,10 +49,20 @@ export class ReactiveObject<T> {
         }
       },
       set(target: any, key: string, value: any): boolean {
+        // prevent effect execution if same value; TODO: allow to be configurable
         if (target[key] === value) return true;
+
+        if (key === Object.getPrototypeOf(self.effects).name) {
+          return false;
+        }
+
         const old = target[key];
         target[key] = value;
-        if (key !== "_isProxy" && key !== self.registerEffect.name && key !== self.removeEffect.name) {
+        if (
+          key !== "_isProxy" 
+          && key !== self.registerEffect.name 
+          && key !== self.removeEffect.name
+        ) {
           for (const h in self.effects.setEffects) {
             self.effects.setEffects[h].apply(self, [key, value, old]);
           }
@@ -103,3 +91,29 @@ export class ReactiveObject<T> {
     delete effects![hash];
   }
 }
+
+interface EffectOptions {
+  full: boolean;
+  all: boolean;
+}
+
+interface GetEffectArguments {
+  key: string;
+  val: any;
+  data: any;
+}
+
+interface SetEffectArguments {
+  key: string;
+  val: any;
+  old: any;
+  data: any;
+}
+
+interface Effects {
+  options: Partial<EffectOptions>;
+  getEffects: { [hash: string ]: (args: GetEffectArguments) => void };
+  setEffects: { [hash: string ]: (args: SetEffectArguments) => void };
+}
+
+
