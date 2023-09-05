@@ -29,7 +29,7 @@ Add a getter effect (for example, a logger for property access).
 
 ```TypeScript
 const foo: any = new ReactiveObject({ bar: 'baz' });
-foo.registerEffect((key: string) => console.log(key), 'get');
+foo.registerEffect(({ key }: GetEffectArguments ) => console.log(key), 'get');
 
 // should log 'bar'
 foo.bar;
@@ -40,7 +40,7 @@ The library guards against infinite loops. The following effect will not execute
 ```TypeScript
 const foo: any = new ReactiveObject({ bar: 'baz' });
 // would blow out the call stack... but will not execute.
-foo.registerEffect((key: string) => console.log(foo[key]), 'get');
+foo.registerEffect(({ key }: GetEffectArguments) => console.log(foo[key]), 'get');
 
 // nothing happens.
 foo.bar;
