@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf dist && npx tsc",
     "format": "npx prettier . --write",
-    "test": "npx jest test/reactive-object.spec.ts"
+    "deploy": "npm run build && npm run format",
+    "test": "npx jest test/reactive-object.spec.ts --coverage=true"
   },
   "keywords": [],
   "author": "Jeremiah Langner",
