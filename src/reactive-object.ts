@@ -1,10 +1,8 @@
 export class ReactiveObject<T> {
-  private store: T;
   private effects: Effects;
 
   constructor(obj: T, options?: Partial<EffectOptions>) {
     const self = this;
-    this.store = obj;
 
     this.effects = {
       options: options || {},
