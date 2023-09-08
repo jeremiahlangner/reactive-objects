@@ -1,10 +1,11 @@
 {
   "name": "reactive-objects",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A simple class to add side effects for Object assignment in TypeScript",
   "main": "dist/reactive-object.js",
+  "types": "dist/reactive-object.d.ts",
   "scripts": {
-    "build": "rm -rf dist && npx tsc",
+    "build": "rm -rf dist && npx tsc && npx esbuild src/reactive-object.ts --outdir=dist --bundle --minify --format=esm",
     "format": "npx prettier . --write",
     "test": "npx jest test/reactive-object.spec.ts --coverage=true"
   },
